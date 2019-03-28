@@ -1,3 +1,3 @@
 # Comp_Params
 
-dsjkhskd
+arayüzü açmak için Comp_Params.m çalıştırılmalı.
