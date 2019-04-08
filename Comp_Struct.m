@@ -10,19 +10,52 @@
 
 clear all
 
-input = inputdlg({'Analiz Dosya Yolu','Labels.txt Konumu','TR','Komponent Adedi'},'Input',[1 100; 1 100; 1 20;1 20]);
-
+Input_defaultanswer = {'','','',''};
 list = {'spektral','temporal','spasyal'};
-indx = listdlg('ListString',list,'ListSize',[250 200],'Name','Parametre Seçimi');
+while 1 % Ana ekranda cancel denmediði sürece çýkmaz. 
+    input = inputdlg({'Analiz Dosya Yolu', 'Labels.txt Konumu', 'TR', 'Komponent Adedi'},...
+        'Input', [1 100; 1 100; 1 20;1 20], Input_defaultanswer);
+    if isempty(input)
+        return
+    end
+    if ~exist(input{1}, 'dir')
+        f = errordlg('Analiz Dosya Yolu bulunamadý','Hata!'); waitfor(f);
+        Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
+        continue
+    end
+    if ~exist(input{2}, 'file')
+        f = errordlg('Labels.txt Konumu bulunamadý','Hata!'); waitfor(f);
+        Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
+        continue
+    end
+    if ~isa(input{3}, 'numeric')
+        f = errordlg('TR hatalý','Hata!'); waitfor(f);
+        Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
+        continue
+    end
+    if ~isa(input{4}, 'numeric')
+        f = errordlg('Komponent Adedi hatalý','Hata!'); waitfor(f);
+        Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
+        continue
+    end
+    
+    indx = listdlg('ListString',list,'ListSize',[250 200],'Name','Parametre Seçimi');
+    if isempty(indx)
+        Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
+        continue
+    else
+        break
+    end
+end
 C.Param = indx;
 
-Dosya = (string(input(1)));
+Dosya = input{1};
 oldfolder = cd(Dosya);
 
 zip_files = dir('*.zip');
 subj_num = numel(zip_files);
 for i = 1:subj_num
-    Dosyalar(:,i) = unzip(zip_files(i).name,fullfile((Dosya),'unzipped'));
+    Dosyalar(:,i) = unzip(zip_files(i).name,fullfile(Dosya,'unzipped'));
 end
 
 cd(oldfolder);
