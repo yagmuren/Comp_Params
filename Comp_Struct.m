@@ -82,11 +82,4 @@ C.Label = repelem(Label,1, subj_num)'; % subj x comp
 
 clearvars -except C input
 save(fullfile(input{1}, 'Params.mat'));
-switch C.Param
-    case 1
-        
-    case 2
-        
-    case 3
-        
-end
+[Parametre] = param_hesap(C);
