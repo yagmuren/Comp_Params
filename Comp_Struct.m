@@ -10,8 +10,8 @@
 
 clear all
 
-Input_defaultanswer = {'','','',''};
-list = {'spektral','temporal','spasyal'};
+Input_defaultanswer = {'';'';'';''};
+list = {'spektral','temporal','spasyal', 'Kaydet ve çýk'};
 while 1 % Ana ekranda cancel denmediði sürece çýkmaz. 
     input = inputdlg({'Analiz Dosya Yolu', 'Labels.txt Konumu', 'TR', 'Komponent Adedi'},...
         'Input', [1 100; 1 100; 1 20;1 20], Input_defaultanswer);
@@ -28,12 +28,12 @@ while 1 % Ana ekranda cancel denmediði sürece çýkmaz.
         Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
         continue
     end
-    if ~isa(input{3}, 'numeric')
+    if isnan(str2double(input{3})) || (str2double(input{3}) < 0)
         f = errordlg('TR hatalý','Hata!'); waitfor(f);
         Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
         continue
     end
-    if ~isa(input{4}, 'numeric')
+    if isnan(str2double(input{4})) || (str2double(input{4}) < 0)
         f = errordlg('Komponent Adedi hatalý','Hata!'); waitfor(f);
         Input_defaultanswer = input; %Önceki ekranýn yanýtýný saklar.
         continue
@@ -49,44 +49,44 @@ while 1 % Ana ekranda cancel denmediði sürece çýkmaz.
 end
 C.Param = indx;
 
+%____Zip dosyalarý açýlýyor.________
 Dosya = input{1};
-oldfolder = cd(Dosya);
-
-zip_files = dir('*.zip');
+%oldfolder = cd(Dosya);
+zip_files = dir(fullfile(Dosya, '*.zip'));
 subj_num = numel(zip_files);
 for i = 1:subj_num
-    Dosyalar(:,i) = unzip(zip_files(i).name,fullfile(Dosya,'unzipped'));
+    Dosyalar(:,i) = unzip(fullfile(Dosya, zip_files(i).name), fullfile(Dosya, 'unzipped'));
 end
+%cd(oldfolder);
 
-cd(oldfolder);
-
-
+%____Ýstenen komponent haritalarýnýn konumlarý ve TC konumu alýnýyor.________
 map_dir = sort(Dosyalar)';
-map_dir(:,[2:2:end])=[];
+map_dir(:,[2:2:end])=[]; % sadece *.hdr dosyalarý
 
 comp_num = str2double(input(4));
-
+max_comp_num = length(map_dir) - 1;
+if comp_num > max_comp_num % elimizdeki adetten fazla olamaz.
+    comp_num = max_comp_num;
+end
 C.Map = map_dir(:,[1:comp_num]);
 C.Tc = map_dir(:,end);
 
-input(3,1)= strrep(input(3),',','.');
-TR = str2double(input(3));
+%____TR alýnýyor.________
+C.TR = str2double(input(3));
 
-fileID = fopen(string(input(2)));
-format= '%f';
-Label= fscanf(fileID,format);
-Labels = repelem(Label,1, subj_num)';
+%____Labels alýnýyor.________
+fileID = fopen(input{2});
+Label= fscanf(fileID, '%f');
+fclose(fileID);
+C.Label = repelem(Label,1, subj_num)'; % subj x comp
 
-
-C.TR = TR;
-C.Label =Labels;
-
-clearvars -except C
-
-if isempty(C.Param) == 0 ;
-    
-    param_hesap(C);
-    
+clearvars -except C input
+save(fullfile(input{1}, 'Params.mat'));
+switch C.Param
+    case 1
+        
+    case 2
+        
+    case 3
+        
 end
-
-save('Params.mat')
