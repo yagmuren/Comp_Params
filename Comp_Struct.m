@@ -11,7 +11,7 @@
 clear all
 
 Input_defaultanswer = {'';'';'';''};
-list = {'spektral','temporal','spasyal', 'Kaydet ve çýk'};
+list = {'spektral','temporal','spasyal'};
 while 1 % Ana ekranda cancel denmediði sürece çýkmaz. 
     input = inputdlg({'Analiz Dosya Yolu', 'Labels.txt Konumu', 'TR', 'Komponent Adedi'},...
         'Input', [1 100; 1 100; 1 20;1 20], Input_defaultanswer);
