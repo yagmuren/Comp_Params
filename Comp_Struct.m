@@ -69,8 +69,10 @@ if comp_num > max_comp_num % elimizdeki adetten fazla olamaz.
     comp_num = max_comp_num;
 end
 C.Map = map_dir(:,[1:comp_num]);
-C.Tc = map_dir(:,end);
-
+for i=1:subj_num
+    im = spm_vol(map_dir(i,end));
+    C.Tc{i} = spm_read_vols(im{1});
+end
 %____TR alýnýyor.________
 C.TR = str2double(input(3));
 
@@ -80,6 +82,6 @@ Label= fscanf(fileID, '%f');
 fclose(fileID);
 C.Label = repelem(Label,1, subj_num)'; % subj x comp
 
-clearvars -except C input
-save(fullfile(input{1}, 'Params.mat'));
+save(fullfile(input{1}, 'Params.mat'),'C');
+clearvars -except C
 [Parametre] = param_hesap(C);
